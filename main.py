@@ -1,4 +1,5 @@
 from collections import UserDict
+import traceback
 
 
 class EmptyNameError(ValueError):
@@ -98,3 +99,61 @@ class AddressBook(UserDict):
     # Інформативне представлення поточного стану об'єкта
     def __str__(self):
         return "\n".join(str(record) for record in self.data.values())
+
+
+def main():
+    try:
+        # Створення нової адресної книги
+        book = AddressBook()
+
+        # Створення запису для John
+        john_record = Record("John")
+        # Додавання запису John до адресної книги
+        book.add_record(john_record)
+        # Додавання телефонів для John
+        john_record.add_phone("1234567890")
+        john_record.add_phone("5555555555")
+        john_record.add_phone("7777777777")
+        # Знаходження телефона у John для заміни
+        for old_num in ["3333333333", "5555555555"]:
+            phone = john_record.find_phone(old_num)
+            if phone:
+                john_record.edit_phone(phone.value, "1111111111")
+
+        # Знаходження телефона у John для видалення
+        for del_num in ["2222222222", "1234567890"]:
+            phone = john_record.find_phone(del_num)
+            if phone:
+                john_record.remove_phone(phone.value)
+
+        # Виведення запису у тел. книзі
+        print("Вивід доданого контакту:", book, end="\n\n")  # Вивід: Contact name: John, phones: 5555555555; 1111111111
+
+        # Створення та додавання нового запису для Jane
+        jane_record = Record("Jane")
+        book.add_record(jane_record)
+        # Додавання телефонів для Jane
+        jane_record.add_phone("9876543210")
+        jane_record.add_phone("9999999999")
+
+        # Виведення записів у тел. книзі
+        print("Вивід контактів після дод. нового:", book)    # Вивід: Contact name: John, phones: 5555555555; 1111111111
+        #                                                             Contact name: Jane, phones: 9876543210; 9999999999
+        print()
+        # Знаходження контакту у тел. книзі book для видалення
+        for name in ["Vasyl", "John"]:
+            contact = book.find(name)
+            if contact:
+                book.delete(name)
+
+        # Виведення записів у тел. книзі
+        print("Виведення контактів після видалення:", book)  # Вивід: Contact name: Jane, phones: 9876543210;
+    except (EmptyNameError, InvalidPhoneError) as e:
+        print("Помилка:", e)
+    except Exception as e:
+        print("Загальна помилка:", e)
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()
