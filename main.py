@@ -27,11 +27,10 @@ class Name(Field):
 
 class Phone(Field):
     def __init__(self, phone: str):
-        # Якщо тел. буде передано наприклад в такому форматі "000-123-45-67" то змінемо формат на "0001234567"
-        digits = ''.join(filter(str.isdigit, str(phone)))
-        if len(digits) != 10:
-            raise InvalidPhoneError("Номер телефону має містити 10 цифр.")
-        super().__init__(digits)
+        phone = phone.strip()       # прибираємо пробіли з початку і кінця
+        if not (len(phone) == 10 and phone.isdigit()):
+            raise InvalidPhoneError(f"Номер телефону: {phone} має містити рівно 10 цифр.")
+        super().__init__(phone)
 
 
 class Record:
@@ -56,8 +55,8 @@ class Record:
     def edit_phone(self, old_number: str, new_number: str):
         # Додавання нового тел. в кінець списку, без врахування порядку
         if self.find_phone(old_number):
-            self.remove_phone(old_number)
             self.add_phone(new_number)
+            self.remove_phone(old_number)
         # Якщо важливий порядок, щоб новий тел. стояв на міці старого, то реалізація:
         # phone = self.find_phone(old_number)
         # if phone:
